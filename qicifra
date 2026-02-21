@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor de Cifras Pro</title>
+
+<style>
+body{
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:10px;
+    background:#f4f4f4;
+}
+
+header{
+    background:#222;
+    color:white;
+    padding:10px;
+    border-radius:8px;
+}
+
+.botoes-topo button,
+.botoes button,
+.acoes button{
+    padding:8px 12px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.botoes-topo button{
+    background:#ddd;
+    margin:2px;
+}
+
+.botoes{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+    margin:10px 0;
+}
+
+.botoes button{
+    background:#444;
+    color:white;
+}
+
+.botoes button:hover{
+    background:#0080ff;
+}
+
+#editor{
+    width:100%;
+    height:250px;
+    border-radius:8px;
+    padding:10px;
+    font-size:16px;
+    background:white;
+    overflow:auto;
+}
+
+.player{
+    margin-top:20px;
+    background:#222;
+    padding:15px;
+    border-radius:10px;
+    color:white;
+}
+
+.player-controles{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    margin-bottom:10px;
+}
+
+.player button{
+    background:#444;
+    color:white;
+}
+
+.player button:hover{
+    background:#0080ff;
+}
+
+#barraProgresso{
+    width:100%;
+    height:15px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<strong>Nova Música</strong><br>
+Tom:
+<select id="seletorTom"></select>
+|
+Compasso: 4/4
+</header>
+
+<div class="botoes-topo">
+<button onclick="inserirTexto('Intro.')">Intro</button>
+<button onclick="ativarMotivo()">Motivo</button>
+<button onclick="inserirTexto('Pré-Refrão')">Pré-Refrão</button>
+<button onclick="inserirTexto('Refrão.')">Refrão</button>
+<button onclick="inserirTexto('Ponte.')">Ponte</button>
+<button onclick="ativarModoGrego()">MG</button>
+<button onclick="abrirPainelEstilo()">Tt</button>
+<button id="togglePipe" onclick="togglePipe()">Pipe: ON</button>
+</div>
+
+<div class="botoes" id="botoesNotas"></div>
+
+<div class="botoes">
+<button onclick="inserirTexto('%',true)">%</button>
+<button onclick="ativarSlash()">/</button>
+<button onclick="inserirTexto('|',true)">|</button>
+<button onclick="inserirTexto('[',true)">[</button>
+<button onclick="inserirTexto(']',true)">]</button>
+<button onclick="inserirTexto('{',true)">{</button>
+<button onclick="inserirTexto('}',true)">}</button>
+<button onclick="inserirManual()">Obs</button>
+</div>
+
+<div class="botoes" id="botoesDigitos" style="display:none;"></div>
+
+<div id="editor" contenteditable="true"></div>
+
+<div class="acoes">
+<button onclick="salvar()">Salvar</button>
+<button onclick="buscar()">Buscar</button>
+<button onclick="apagar()">Limpar</button>
+<button onclick="salvarPDF()">Salvar em PDF</button>
+</div>
+
+<div class="player">
+
+<input type="file" id="audioFile" accept="audio/*">
+<audio id="player"></audio>
+
+<div class="player-controles">
+<button onclick="voltar5()">⏪ 5s</button>
+<button onclick="playPause()" id="btnPlay">▶</button>
+<button onclick="avancar5()">5s ⏩</button>
+
+<select id="velocidade" onchange="mudarVelocidade()">
+<option value="0.5">0.5x</option>
+<option value="0.75">0.75x</option>
+<option value="1" selected>1x</option>
+<option value="1.25">1.25x</option>
+<option value="1.5">1.5x</option>
+</select>
+
+<button onclick="marcarInicioLoop()">A</button>
+<button onclick="marcarFimLoop()">B</button>
+<button onclick="desativarLoop()">Loop Off</button>
+
+<span id="tempoAtual">0:00</span>
+</div>
+
+<input type="range" id="barraProgresso" value="0" min="0" max="100">
+
+</div>
+
+<script>
+
+// CONFIGURAÇÕES DE TOM
+let tomAtual="C";
+let pipeAtivo=true;
+
+const escalas={
+C:["C","Dm","Em","F","G","Am","B°"],
+D:["D","Em","F#m","G","A","Bm","C#°"],
+E:["E","F#m","G#m","A","B","C#m","D#°"],
+F:["F","Gm","Am","Bb","C","Dm","E°"],
+G:["G","Am","Bm","C","D","Em","F#°"],
+A:["A","Bm","C#m","D","E","F#m","G#°"],
+B:["B","C#m","D#m","E","F#","G#m","A#°"]
+};
+
+// TOM
+const seletor=document.getElementById("seletorTom");
+Object.keys(escalas).forEach(t=>{
+let o=document.createElement("option");
+o.value=t;o.textContent=t;
+seletor.appendChild(o);
+});
+seletor.value=tomAtual;
+seletor.onchange=()=>{tomAtual=seletor.value;gerarBotoes();};
+
+function gerarBotoes(){
+let c=document.getElementById("botoesNotas");
+c.innerHTML="";
+escalas[tomAtual].forEach(a=>{
+let b=document.createElement("button");
+b.textContent=a;
+b.onclick=()=>inserirTexto(a);
+c.appendChild(b);
+});
+}
+gerarBotoes();
+
+// PIPE
+function togglePipe(){
+pipeAtivo=!pipeAtivo;
+document.getElementById("togglePipe").textContent=
+pipeAtivo?"Pipe: ON":"Pipe: OFF";
+}
+
+// INSERÇÃO
+function inserirTexto(t,forcarSemPipe=false){
+const editor=document.getElementById("editor");
+editor.focus();
+let semPipe=["Intro.","Refrão.","Pré-Refrão","Ponte.","Motivo."];
+if(!forcarSemPipe && pipeAtivo && !semPipe.includes(t)){
+t+=" | ";
+}
+document.execCommand("insertText",false,t);
+}
+
+// SLASH
+function ativarSlash(){
+inserirTexto("/",true);
+let c=document.getElementById("botoesDigitos");
+c.style.display="flex";
+c.innerHTML="";
+["2","3","5","7"].forEach(d=>{
+let b=document.createElement("button");
+b.textContent=d;
+b.onclick=()=>{
+inserirTexto(d,true);
+c.style.display="none";
+};
+c.appendChild(b);
+});
+}
+
+// MOTIVO
+function ativarMotivo(){
+inserirTexto("Motivo.",true);
+let c=document.getElementById("botoesDigitos");
+c.style.display="flex";
+c.innerHTML="";
+["1","2","3","4","5"].forEach(d=>{
+let b=document.createElement("button");
+b.textContent=d;
+b.onclick=()=>{
+inserirTexto(d,true);
+c.style.display="none";
+};
+c.appendChild(b);
+});
+}
+
+// MODO GREGO
+function ativarModoGrego(){
+let c=document.getElementById("botoesNotas");
+c.innerHTML="";
+["I","II","III","IV","V","VI","VII"].forEach(n=>{
+let b=document.createElement("button");
+b.textContent=n;
+b.onclick=()=>inserirTexto(n);
+c.appendChild(b);
+});
+}
+
+// Tt
+function abrirPainelEstilo(){
+let opcao = prompt(
+"1-Negrito\n2-Itálico\n3-Sublinhado\n4-Aumentar\n5-Diminuir\n6-Tamanho Personalizado"
+);
+
+if(!opcao) return;
+
+switch(opcao){
+case "1": document.execCommand("bold"); break;
+case "2": document.execCommand("italic"); break;
+case "3": document.execCommand("underline"); break;
+case "4": document.execCommand("fontSize",false,"5"); break;
+case "5": document.execCommand("fontSize",false,"2"); break;
+case "6":
+let tamanho=prompt("Digite o tamanho (ex: 18)");
+if(tamanho){
+document.execCommand("fontSize",false,"7");
+let fonts=document.getElementsByTagName("font");
+for(let i=0;i<fonts.length;i++){
+if(fonts[i].size=="7"){
+fonts[i].removeAttribute("size");
+fonts[i].style.fontSize=tamanho+"px";
+}
+}
+}
+break;
+}
+}
+
+// OBS
+function inserirManual(){
+let t=prompt("Digite observação:");
+if(t) inserirTexto(t,true);
+}
+
+// PDF
+function salvarPDF(){
+let conteudo=document.getElementById("editor").innerHTML;
+let w=window.open("","","width=800,height=600");
+w.document.write("<html><head><title>Cifra</title></head><body>"+conteudo+"</body></html>");
+w.document.close();
+w.print();
+}
+
+/* -------------------- FUNÇÕES SALVAR / BUSCAR / LIMPAR -------------------- */
+function salvar() {
+    const conteudo = document.getElementById("editor").innerHTML;
+    localStorage.setItem("minhaCifra", conteudo);
+    alert("Cifra salva!");
+}
+
+function buscar() {
+    const conteudo = localStorage.getItem("minhaCifra");
+    if(conteudo){
+        document.getElementById("editor").innerHTML = conteudo;
+        alert("Cifra carregada!");
+    } else {
+        alert("Nenhuma cifra salva encontrada.");
+    }
+}
+
+function apagar() {
+    if(confirm("Deseja realmente limpar o editor?")){
+        document.getElementById("editor").innerHTML = "";
+    }
+}
+
+/* -------------------- PLAYER FUNCIONAL -------------------- */
+const audioFile = document.getElementById("audioFile");
+const player = document.getElementById("player");
+const barraProgresso = document.getElementById("barraProgresso");
+const btnPlay = document.getElementById("btnPlay");
+let loopStart = 0;
+let loopEnd = null;
+
+// Carregar arquivo selecionado
+audioFile.addEventListener("change", function() {
+    const file = this.files[0];
+    if(file){
+        const url = URL.createObjectURL(file);
+        player.src = url;
+        player.load();
+    }
+});
+
+// Play / Pause
+function playPause(){
+    if(player.src === "") return;
+    if(player.paused){
+        player.play();
+        btnPlay.textContent = "⏸";
+    } else {
+        player.pause();
+        btnPlay.textContent = "▶";
+    }
+}
+
+// Voltar 5 segundos
+function voltar5(){
+    if(player.src === "") return;
+    player.currentTime = Math.max(0, player.currentTime - 5);
+}
+
+// Avançar 5 segundos
+function avancar5(){
+    if(player.src === "") return;
+    player.currentTime = Math.min(player.duration, player.currentTime + 5);
+}
+
+// Velocidade
+function mudarVelocidade(){
+    player.playbackRate = parseFloat(document.getElementById("velocidade").value);
+}
+
+// Barra de progresso
+player.addEventListener("timeupdate", () => {
+    if(player.duration){
+        barraProgresso.value = (player.currentTime / player.duration) * 100;
+        document.getElementById("tempoAtual").textContent = formatTime(player.currentTime);
+    }
+});
+
+barraProgresso.addEventListener("input", () => {
+    if(player.duration){
+        player.currentTime = (barraProgresso.value / 100) * player.duration;
+    }
+});
+
+// Loop
+function marcarInicioLoop(){ loopStart = player.currentTime; }
+function marcarFimLoop(){ loopEnd = player.currentTime; }
+function desativarLoop(){ loopStart = 0; loopEnd = null; }
+
+player.addEventListener("timeupdate", () => {
+    if(loopEnd !== null && player.currentTime >= loopEnd){
+        player.currentTime = loopStart;
+        player.play();
+    }
+});
+
+// Formatar tempo
+function formatTime(t){
+    const min = Math.floor(t/60);
+    const sec = Math.floor(t%60);
+    return `${min}:${sec.toString().padStart(2,"0")}`;
+}
+
+</script>
+
+</body>
+</html>
