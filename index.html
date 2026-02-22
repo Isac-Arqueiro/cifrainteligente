@@ -114,12 +114,15 @@ Compasso: 4/4
 <button onclick="ativarModoGrego()">MG</button>
 <button onclick="abrirPainelEstilo()">Tt</button>
 <button id="togglePipe" onclick="togglePipe()">Pipe: ON</button>
+<button onclick="toggleFiguras()">Figuras</button>
 </div>
 
 <div class="botoes" id="botoesNotas"></div>
 
+<div class="botoes" id="botoesFiguras" style="display:none;"></div>
+
 <div class="botoes">
-<button onclick="inserirTexto('% |',true)">%</button>
+<button onclick="inserirTexto(' % |',true)">%</button>
 <button onclick="ativarSlash()">/</button>
 <button onclick="inserirTexto('|',true)">|</button>
 <button onclick="inserirTexto('°',true)">°</button>
@@ -193,132 +196,160 @@ const escalas = {
 // TOM
 const seletor=document.getElementById("seletorTom");
 Object.keys(escalas).forEach(t=>{
-let o=document.createElement("option");
-o.value=t;o.textContent=t;
-seletor.appendChild(o);
+    let o=document.createElement("option");
+    o.value=t;o.textContent=t;
+    seletor.appendChild(o);
 });
 seletor.value=tomAtual;
 seletor.onchange=()=>{tomAtual=seletor.value;gerarBotoes();};
 
 function gerarBotoes(){
-let c=document.getElementById("botoesNotas");
-c.innerHTML="";
-escalas[tomAtual].forEach(a=>{
-let b=document.createElement("button");
-b.textContent=a;
-b.onclick=()=>inserirTexto(a);
-c.appendChild(b);
-});
+    let c=document.getElementById("botoesNotas");
+    c.innerHTML="";
+    escalas[tomAtual].forEach(a=>{
+        let b=document.createElement("button");
+        b.textContent=a;
+        b.onclick=()=>inserirTexto(a);
+        c.appendChild(b);
+    });
 }
 gerarBotoes();
 
 // PIPE
 function togglePipe(){
-pipeAtivo=!pipeAtivo;
-document.getElementById("togglePipe").textContent=
-pipeAtivo?"Pipe: ON":"Pipe: OFF";
+    pipeAtivo=!pipeAtivo;
+    document.getElementById("togglePipe").textContent=
+    pipeAtivo?"Pipe: ON":"Pipe: OFF";
 }
 
 // INSERÇÃO
 function inserirTexto(t,forcarSemPipe=false){
-const editor=document.getElementById("editor");
-editor.focus();
-let semPipe=["Intro.","Refrão.","Pré-Refrão","Ponte.","Motivo."];
-if(!forcarSemPipe && pipeAtivo && !semPipe.includes(t)){
-t+=" | ";
-}
-document.execCommand("insertText",false,t);
+    const editor=document.getElementById("editor");
+    editor.focus();
+    let semPipe=["Intro.","Refrão.","Pré-Refrão","Ponte.","Motivo."];
+    if(!forcarSemPipe && pipeAtivo && !semPipe.includes(t)){
+        t+=" | ";
+    }
+    document.execCommand("insertText",false,t);
 }
 
 // SLASH
 function ativarSlash(){
-inserirTexto("/",true);
-let c=document.getElementById("botoesDigitos");
-c.style.display="flex";
-c.innerHTML="";
-["2","3","5","7"].forEach(d=>{
-let b=document.createElement("button");
-b.textContent=d;
-b.onclick=()=>{
-inserirTexto(d,true);
-c.style.display="none";
-};
-c.appendChild(b);
-});
+    inserirTexto("/",true);
+    let c=document.getElementById("botoesDigitos");
+    c.style.display="flex";
+    c.innerHTML="";
+    ["2","3","5","7"].forEach(d=>{
+        let b=document.createElement("button");
+        b.textContent=d;
+        b.onclick=()=>{
+            inserirTexto(d,true);
+            c.style.display="none";
+        };
+        c.appendChild(b);
+    });
 }
 
 // MOTIVO
 function ativarMotivo(){
-inserirTexto("Motivo.",true);
-let c=document.getElementById("botoesDigitos");
-c.style.display="flex";
-c.innerHTML="";
-["1","2","3","4","5"].forEach(d=>{
-let b=document.createElement("button");
-b.textContent=d;
-b.onclick=()=>{
-inserirTexto(d,true);
-c.style.display="none";
-};
-c.appendChild(b);
-});
+    inserirTexto("Motivo.",true);
+    let c=document.getElementById("botoesDigitos");
+    c.style.display="flex";
+    c.innerHTML="";
+    ["1","2","3","4","5"].forEach(d=>{
+        let b=document.createElement("button");
+        b.textContent=d;
+        b.onclick=()=>{
+            inserirTexto(d,true);
+            c.style.display="none";
+        };
+        c.appendChild(b);
+    });
 }
 
 // MODO GREGO
 function ativarModoGrego(){
-let c=document.getElementById("botoesNotas");
-c.innerHTML="";
-["I","II","III","IV","V","VI","VII"].forEach(n=>{
-let b=document.createElement("button");
-b.textContent=n;
-b.onclick=()=>inserirTexto(n);
-c.appendChild(b);
-});
+    let c=document.getElementById("botoesNotas");
+    c.innerHTML="";
+    ["I","II","III","IV","V","VI","VII"].forEach(n=>{
+        let b=document.createElement("button");
+        b.textContent=n;
+        b.onclick=()=>inserirTexto(n);
+        c.appendChild(b);
+    });
 }
 
 // Tt
 function abrirPainelEstilo(){
-let opcao = prompt(
-"1-Negrito\n2-Itálico\n3-Sublinhado\n4-Aumentar\n5-Diminuir\n6-Tamanho Personalizado"
-);
+    let opcao = prompt(
+        "1-Negrito\n2-Itálico\n3-Sublinhado\n4-Aumentar\n5-Diminuir\n6-Tamanho Personalizado"
+    );
 
-if(!opcao) return;
+    if(!opcao) return;
 
-switch(opcao){
-case "1": document.execCommand("bold"); break;
-case "2": document.execCommand("italic"); break;
-case "3": document.execCommand("underline"); break;
-case "4": document.execCommand("fontSize",false,"5"); break;
-case "5": document.execCommand("fontSize",false,"2"); break;
-case "6":
-let tamanho=prompt("Digite o tamanho (ex: 18)");
-if(tamanho){
-document.execCommand("fontSize",false,"7");
-let fonts=document.getElementsByTagName("font");
-for(let i=0;i<fonts.length;i++){
-if(fonts[i].size=="7"){
-fonts[i].removeAttribute("size");
-fonts[i].style.fontSize=tamanho+"px";
-}
-}
-}
-break;
-}
+    switch(opcao){
+        case "1": document.execCommand("bold"); break;
+        case "2": document.execCommand("italic"); break;
+        case "3": document.execCommand("underline"); break;
+        case "4": document.execCommand("fontSize",false,"5"); break;
+        case "5": document.execCommand("fontSize",false,"2"); break;
+        case "6":
+            let tamanho=prompt("Digite o tamanho (ex: 18)");
+            if(tamanho){
+                document.execCommand("fontSize",false,"7");
+                let fonts=document.getElementsByTagName("font");
+                for(let i=0;i<fonts.length;i++){
+                    if(fonts[i].size=="7"){
+                        fonts[i].removeAttribute("size");
+                        fonts[i].style.fontSize=tamanho+"px";
+                    }
+                }
+            }
+            break;
+    }
 }
 
 // OBS
 function inserirManual(){
-let t=prompt("Digite observação:");
-if(t) inserirTexto(t,true);
+    let t=prompt("Digite observação:");
+    if(t) inserirTexto(t,true);
+}
+
+// FIGURAS MUSICAIS
+const figurasMusicais = [
+    {simbolo: "♩", label: "Tempo Cheio"},
+    {simbolo: "♫", label: "Duas Colcheias"},
+    {simbolo: "♬", label: "Quatro Semicolcheias"},
+    {simbolo: "𝄽", label: "Pausa Meio"},
+    {simbolo: "𝄾", label: "Pausa Quarto"},
+    {simbolo: "𝄿", label: "Pausa Oitavo"}
+];
+
+function toggleFiguras(){
+    const div=document.getElementById("botoesFiguras");
+    if(div.style.display==="none"){
+        div.style.display="flex";
+        div.innerHTML="";
+        figurasMusicais.forEach(f=>{
+            const btn=document.createElement("button");
+            btn.textContent=f.simbolo;
+            btn.title=f.label;
+            btn.onclick=()=>inserirTexto(f.simbolo,true);
+            div.appendChild(btn);
+        });
+    }else{
+        div.style.display="none";
+        div.innerHTML="";
+    }
 }
 
 // PDF
 function salvarPDF(){
-let conteudo=document.getElementById("editor").innerHTML;
-let w=window.open("","","width=800,height=600");
-w.document.write("<html><head><title>Cifra</title></head><body>"+conteudo+"</body></html>");
-w.document.close();
-w.print();
+    let conteudo=document.getElementById("editor").innerHTML;
+    let w=window.open("","","width=800,height=600");
+    w.document.write("<html><head><title>Cifra</title></head><body>"+conteudo+"</body></html>");
+    w.document.close();
+    w.print();
 }
 
 /* -------------------- FUNÇÕES SALVAR / BUSCAR / LIMPAR -------------------- */
@@ -425,6 +456,7 @@ function formatTime(t){
 }
 
 </script>
+
 <button id="btnInstall" style="display:none;">📲 Instalar App</button>
 <script>
 let deferredPrompt;
@@ -432,7 +464,7 @@ const btnInstall = document.getElementById("btnInstall");
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  btnInstall.style.display = "block"; // mostra o botão
+  btnInstall.style.display = "block";
 });
 
 btnInstall.addEventListener("click", async () => {
