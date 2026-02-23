@@ -285,7 +285,7 @@ function togglePipe(){
 function inserirTexto(t,forcarSemPipe=false){
     const editor=document.getElementById("editor");
     editor.focus();
-    let semPipe=["Intro.","Refrão.","Pré-Refrão","Ponte.","Motivo."];
+    let semPipe=["Intro.","Refrão.","Pré-Refrão","Ponte.","Estrofe."];
     if(!forcarSemPipe && pipeAtivo && !semPipe.includes(t)){
         t+=" | ";
     }
