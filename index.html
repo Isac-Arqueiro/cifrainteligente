@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#000000">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Editor de Cifras Pro</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
 
 <style>
+/* ----------------------- LOGIN ----------------------- */
+@keyframes brilhoBtn {
+  from { filter: drop-shadow(0 0 5px #ff3b3b); }
+  to { filter: drop-shadow(0 0 20px #ff3b3b); }
+}
+
+/* ----------------------- EDITOR ----------------------- */
 body{
     font-family:Arial, sans-serif;
     margin:0;
@@ -97,6 +104,38 @@ header{
 
 <body>
 
+<!-- ----------------------- TELA DE LOGIN ----------------------- -->
+<div id="loginScreen" style="display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); font-family:Arial; flex-direction:column;">
+  <div style="background:white; padding:40px; border-radius:15px; width:220px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+    <img src="https://i.imgur.com/kV9yJ0a.jpeg" width="100%" style="border-radius:10px; margin-bottom:20px;" alt="Imagem Login">
+    <h2 style="margin-bottom:20px;">🔐 Área de Login</h2>
+    <input type="password" id="senhaInput" placeholder="Digite sua senha" style="padding:12px; width:100%; border-radius:8px; border:1px solid #ccc; outline:none;">
+    <br><br>
+    <button onclick="verificarSenha()" style="padding:12px; width:100%; border:none; border-radius:8px; background:#28a745; color:white; font-weight:bold; cursor:pointer;">Entrar</button>
+    <p id="mensagemErro" style="color:red; display:none; margin-top:10px;">Senha incorreta fale com seu master</p>
+    <hr style="margin:30px 0;">
+    <button onclick="mostrarPix()" style="background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; animation: brilhoBtn 1.5s infinite alternate;">
+      <img src="https://img.icons8.com/color/200/pix.png" width="20" alt="Pix">
+      <span style="font-size:14px; color:#00ff88; font-weight:bold; text-shadow: 0 0 5px #ff3b3b, 0 0 10px #ff3b3b, 0 0 20px #ff3b3b;">PLANOS - PAGAMENTO</span>
+    </button>
+    <div id="infoPix" style="display:none; margin-top:20px; background:#f2f2f2; padding:15px; border-radius:10px; font-size:14px;">
+      <p><strong>Valor:</strong> R$5.00 - 30 dias / R$40.00 um ano</p>
+      <p><strong>Nome:</strong> Isac Coelho Barbosa</p>
+      <p><strong>Banco:</strong> Mercado Pago</p>
+      <p><strong>Pix:</strong> 84986222876</p>
+      <p><strong>Aviso:</strong> Envie o comprovante para o master.</p>
+    </div>
+    <br>
+    <button onclick="abrirWhatsapp()" style="margin-top:15px; padding:12px; width:100%; border:none; border-radius:8px; background:#25D366; color:white; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20" alt="WhatsApp"> Dúvidas / Master
+    </button>
+  </div>
+</div>
+
+<!-- ----------------------- CONTAINER DA APLICAÇÃO ----------------------- -->
+<div id="appContainer" style="display:none;">
+<!-- TODO: TODO o conteúdo do editor de cifras entra aqui -->
+
 <header>
 <strong>Nova Música</strong><br>
 Tom:
@@ -118,7 +157,6 @@ Compasso: 4/4
 </div>
 
 <div class="botoes" id="botoesNotas"></div>
-
 <div class="botoes" id="botoesFiguras" style="display:none;"></div>
 
 <div class="botoes">
@@ -132,8 +170,6 @@ Compasso: 4/4
 <button onclick="inserirManual()">Obs</button>
 </div>
 
-<div class="botoes" id="botoesDigitos" style="display:none;"></div>
-
 <div id="editor" contenteditable="true"></div>
 
 <div class="acoes">
@@ -144,7 +180,6 @@ Compasso: 4/4
 </div>
 
 <div class="player">
-
 <input type="file" id="audioFile" accept="audio/*">
 <audio id="player"></audio>
 
@@ -169,12 +204,39 @@ Compasso: 4/4
 </div>
 
 <input type="range" id="barraProgresso" value="0" min="0" max="100">
-
 </div>
 
-<script>
+<button id="btnInstall" style="display:none;">📲 Instalar App</button>
+</div>
 
-// CONFIGURAÇÕES DE TOM
+<!-- ----------------------- SCRIPTS ----------------------- -->
+<script>
+// ----------------------- LOGIN -----------------------
+const senhasPermitidas = ["VerboVip","0000","1111","2222","3333","4444","5555"];
+
+function verificarSenha() {
+  const senha = document.getElementById("senhaInput").value;
+  const erro = document.getElementById("mensagemErro");
+  if (senhasPermitidas.includes(senha)) {
+    erro.style.display = "none";
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("appContainer").style.display = "block";
+    alert("✅ Acesso liberado!");
+  } else {
+    erro.style.display = "block";
+  }
+}
+
+function mostrarPix() {
+  const pix = document.getElementById("infoPix");
+  pix.style.display = pix.style.display === "none" ? "block" : "none";
+}
+
+function abrirWhatsapp() {
+  window.open("https://api.whatsapp.com/send?phone=5584994625560&text=ol%C3%A1", "_blank");
+}
+
+// ----------------------- EDITOR -----------------------
 let tomAtual="C";
 let pipeAtivo=true;
 
@@ -193,7 +255,6 @@ const escalas = {
     B: ["B","C#m","D#m","E","F#","G#m","A#°"]
 };
 
-// TOM
 const seletor=document.getElementById("seletorTom");
 Object.keys(escalas).forEach(t=>{
     let o=document.createElement("option");
@@ -215,14 +276,12 @@ function gerarBotoes(){
 }
 gerarBotoes();
 
-// PIPE
 function togglePipe(){
     pipeAtivo=!pipeAtivo;
     document.getElementById("togglePipe").textContent=
     pipeAtivo?"Pipe: ON":"Pipe: OFF";
 }
 
-// INSERÇÃO
 function inserirTexto(t,forcarSemPipe=false){
     const editor=document.getElementById("editor");
     editor.focus();
@@ -233,7 +292,6 @@ function inserirTexto(t,forcarSemPipe=false){
     document.execCommand("insertText",false,t);
 }
 
-// SLASH
 function ativarSlash(){
     inserirTexto("/",true);
     let c=document.getElementById("botoesDigitos");
@@ -250,7 +308,6 @@ function ativarSlash(){
     });
 }
 
-// MOTIVO
 function ativarMotivo(){
     inserirTexto("Motivo.",true);
     let c=document.getElementById("botoesDigitos");
@@ -267,7 +324,6 @@ function ativarMotivo(){
     });
 }
 
-// MODO GREGO
 function ativarModoGrego(){
     let c=document.getElementById("botoesNotas");
     c.innerHTML="";
@@ -279,14 +335,9 @@ function ativarModoGrego(){
     });
 }
 
-// Tt
 function abrirPainelEstilo(){
-    let opcao = prompt(
-        "1-Negrito\n2-Itálico\n3-Sublinhado\n4-Aumentar\n5-Diminuir\n6-Tamanho Personalizado"
-    );
-
+    let opcao = prompt("1-Negrito\n2-Itálico\n3-Sublinhado\n4-Aumentar\n5-Diminuir\n6-Tamanho Personalizado");
     if(!opcao) return;
-
     switch(opcao){
         case "1": document.execCommand("bold"); break;
         case "2": document.execCommand("italic"); break;
@@ -309,13 +360,26 @@ function abrirPainelEstilo(){
     }
 }
 
-// OBS
 function inserirManual(){
-    let t=prompt("Digite observação:");
-    if(t) inserirTexto(t,true);
+    let t = prompt("Digite observação:");
+    if(t){
+        const editor = document.getElementById("editor");
+        editor.focus();
+
+        // Garante que vamos usar CSS inline
+        document.execCommand("styleWithCSS", false, true);
+
+        // Define temporariamente a cor vermelha
+        document.execCommand("foreColor", false, "red");
+
+        // Insere o texto digitado
+        document.execCommand("insertText", false, t);
+
+        // Volta a cor padrão do editor (preto)
+        document.execCommand("foreColor", false, "black");
+    }
 }
 
-// FIGURAS MUSICAIS
 const figurasMusicais = [
     {simbolo: "♩", label: "Tempo Cheio"},
     {simbolo: "♫", label: "Duas Colcheias"},
@@ -343,7 +407,6 @@ function toggleFiguras(){
     }
 }
 
-// PDF
 function salvarPDF(){
     let conteudo=document.getElementById("editor").innerHTML;
     let w=window.open("","","width=800,height=600");
@@ -352,7 +415,6 @@ function salvarPDF(){
     w.print();
 }
 
-/* -------------------- FUNÇÕES SALVAR / BUSCAR / LIMPAR -------------------- */
 function salvar() {
     const conteudo = document.getElementById("editor").innerHTML;
     localStorage.setItem("minhaCifra", conteudo);
@@ -375,7 +437,7 @@ function apagar() {
     }
 }
 
-/* -------------------- PLAYER FUNCIONAL -------------------- */
+// ----------------------- PLAYER -----------------------
 const audioFile = document.getElementById("audioFile");
 const player = document.getElementById("player");
 const barraProgresso = document.getElementById("barraProgresso");
@@ -383,7 +445,6 @@ const btnPlay = document.getElementById("btnPlay");
 let loopStart = 0;
 let loopEnd = null;
 
-// Carregar arquivo selecionado
 audioFile.addEventListener("change", function() {
     const file = this.files[0];
     if(file){
@@ -393,7 +454,6 @@ audioFile.addEventListener("change", function() {
     }
 });
 
-// Play / Pause
 function playPause(){
     if(player.src === "") return;
     if(player.paused){
@@ -405,29 +465,14 @@ function playPause(){
     }
 }
 
-// Voltar 5 segundos
-function voltar5(){
-    if(player.src === "") return;
-    player.currentTime = Math.max(0, player.currentTime - 5);
-}
+function voltar5(){ if(player.src === "") return; player.currentTime = Math.max(0, player.currentTime - 5);}
+function avancar5(){ if(player.src === "") return; player.currentTime = Math.min(player.duration, player.currentTime + 5);}
+function mudarVelocidade(){ player.playbackRate = parseFloat(document.getElementById("velocidade").value); }
 
-// Avançar 5 segundos
-function avancar5(){
-    if(player.src === "") return;
-    player.currentTime = Math.min(player.duration, player.currentTime + 5);
-}
-
-// Velocidade
-function mudarVelocidade(){
-    player.playbackRate = parseFloat(document.getElementById("velocidade").value);
-}
-
-// Barra de progresso
 player.addEventListener("timeupdate", () => {
     if(player.duration){
         barraProgresso.value = (player.currentTime / player.duration) * 100;
-        document.getElementById("tempoAtual").textContent = formatTime(player.currentTime);
-    }
+        document.getElementById("tempoAtual").textContent = formatTime(player.currentTime);    }
 });
 
 barraProgresso.addEventListener("input", () => {
@@ -455,12 +500,10 @@ function formatTime(t){
     return `${min}:${sec.toString().padStart(2,"0")}`;
 }
 
-</script>
-
-<button id="btnInstall" style="display:none;">📲 Instalar App</button>
-<script>
+// ----------------------- INSTALL PWA -----------------------
 let deferredPrompt;
 const btnInstall = document.getElementById("btnInstall");
+
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
@@ -482,5 +525,6 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
 </script>
+
 </body>
 </html>
