@@ -152,7 +152,7 @@ Compasso: 4/4
 <button onclick="inserirTexto('Ponte.')">Ponte</button>
 <button onclick="ativarModoGrego()">MG</button>
 <button onclick="abrirPainelEstilo()">Tt</button>
-<button id="togglePipe" onclick="togglePipe()">Pipe: ON</button>
+<button id="togglePipe" onclick="togglePipe()">|: ON</button>
 <button onclick="toggleFiguras()">Figuras</button>
 </div>
 
@@ -214,11 +214,22 @@ Compasso: 4/4
 // ----------------------- LOGIN -----------------------
 const senhasPermitidas = ["VerboVip","0000","1111","2222","3333","4444","5555"];
 
+// Login automático ao carregar a página
+window.addEventListener("load", () => {
+  const senhaSalva = localStorage.getItem("senhaValida");
+  if(senhaSalva && senhasPermitidas.includes(senhaSalva)){
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("appContainer").style.display = "block";
+    alert("✅ Acesso liberado automaticamente!");
+  }
+});
+
 function verificarSenha() {
   const senha = document.getElementById("senhaInput").value;
   const erro = document.getElementById("mensagemErro");
   if (senhasPermitidas.includes(senha)) {
     erro.style.display = "none";
+    localStorage.setItem("senhaValida", senha); // SALVA a senha correta
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("appContainer").style.display = "block";
     alert("✅ Acesso liberado!");
@@ -234,6 +245,13 @@ function mostrarPix() {
 
 function abrirWhatsapp() {
   window.open("https://api.whatsapp.com/send?phone=5584994625560&text=ol%C3%A1", "_blank");
+}
+
+// Função opcional para sair e limpar senha
+function sair() {
+  localStorage.removeItem("senhaValida");
+  document.getElementById("loginScreen").style.display = "flex";
+  document.getElementById("appContainer").style.display = "none";
 }
 
 // ----------------------- EDITOR -----------------------
@@ -279,7 +297,7 @@ gerarBotoes();
 function togglePipe(){
     pipeAtivo=!pipeAtivo;
     document.getElementById("togglePipe").textContent=
-    pipeAtivo?"Pipe: ON":"Pipe: OFF";
+    pipeAtivo?"| : ON":"| : OFF";
 }
 
 function inserirTexto(t,forcarSemPipe=false){
@@ -365,17 +383,9 @@ function inserirManual(){
     if(t){
         const editor = document.getElementById("editor");
         editor.focus();
-
-        // Garante que vamos usar CSS inline
         document.execCommand("styleWithCSS", false, true);
-
-        // Define temporariamente a cor vermelha
         document.execCommand("foreColor", false, "red");
-
-        // Insere o texto digitado
         document.execCommand("insertText", false, t);
-
-        // Volta a cor padrão do editor (preto)
         document.execCommand("foreColor", false, "black");
     }
 }
