@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -108,8 +107,8 @@ header{
 }
 
 .editor-zoom {
-    width: 794px;              /* largura A4 em px */
-    min-height: 1123px;        /* altura A4 */
+    width: 794px;
+    min-height: 1123px;
     background: white;
     padding: 40px;
     box-shadow: 0 0 20px rgba(0,0,0,0.3);
@@ -132,11 +131,11 @@ header{
     <input type="password" id="senhaInput" placeholder="Digite sua senha" style="padding:12px; width:100%; border-radius:8px; border:1px solid #ccc; outline:none;">
     <br><br>
     <button onclick="verificarSenha()" style="padding:12px; width:100%; border:none; border-radius:8px; background:#28a745; color:white; font-weight:bold; cursor:pointer;">Entrar</button>
-<button onclick="usarFree()" 
-style="padding:12px; width:100%; border:none; border-radius:8px; 
-background:#007bff; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">
-Usar Free
-</button>
+    <button onclick="usarFree()" 
+    style="padding:12px; width:100%; border:none; border-radius:8px; 
+    background:#007bff; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">
+    Usar Free
+    </button>
     <p id="mensagemErro" style="color:red; display:none; margin-top:10px;">Senha incorreta fale com seu master</p>
     <hr style="margin:30px 0;">
     <button onclick="mostrarPix()" style="background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; animation: brilhoBtn 1.5s infinite alternate;">
@@ -148,7 +147,6 @@ Usar Free
       <p><strong>Nome:</strong> Isac Coelho Barbosa</p>
       <p><strong>Banco:</strong> Mercado Pago</p>
       <p><strong>Pix:</strong> 84986222876</p>
-      <p><strong></strong> .</p>
     </div>
     <br>
     <button onclick="abrirWhatsapp()" style="margin-top:15px; padding:12px; width:100%; border:none; border-radius:8px; background:#25D366; color:white; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
@@ -159,7 +157,6 @@ Usar Free
 
 <!-- ----------------------- CONTAINER DA APLICAÇÃO ----------------------- -->
 <div id="appContainer" style="display:none;">
-<!-- TODO: TODO o conteúdo do editor de cifras entra aqui -->
 
 <header>
 <strong>Nova Música</strong><br>
@@ -205,37 +202,40 @@ Compasso: 4/4
 <button onclick="salvarPDF()">Salvar em PDF</button>
 </div>
 
+<!-- ----------------------- PLAYER UNIFICADO ----------------------- -->
 <div class="player">
-<input type="file" id="audioFile" accept="audio/*">
-<audio id="player"></audio>
+  <input type="file" id="audioFile" accept="audio/*">
+  <input type="text" id="youtubeURL" placeholder="Cole link do YouTube">
+  <button onclick="tocarYoutube()">▶️ Tocar YouTube</button>
 
-<div class="player-controles">
-<button onclick="voltar5()">⏪ 5s</button>
-<button onclick="playPause()" id="btnPlay">▶</button>
-<button onclick="avancar5()">5s ⏩</button>
+  <div class="player-controles">
+    <button onclick="voltar5()">⏪ 5s</button>
+    <button onclick="playPause()" id="btnPlay">▶</button>
+    <button onclick="avancar5()">5s ⏩</button>
 
-<select id="velocidade" onchange="mudarVelocidade()">
-<option value="0.5">0.5x</option>
-<option value="0.75">0.75x</option>
-<option value="1" selected>1x</option>
-<option value="1.25">1.25x</option>
-<option value="1.5">1.5x</option>
-</select>
+    <select id="velocidade" onchange="mudarVelocidade()">
+      <option value="0.5">0.5x</option>
+      <option value="0.75">0.75x</option>
+      <option value="1" selected>1x</option>
+      <option value="1.25">1.25x</option>
+      <option value="1.5">1.5x</option>
+    </select>
 
-<button onclick="marcarInicioLoop()">A</button>
-<button onclick="marcarFimLoop()">B</button>
-<button onclick="desativarLoop()">Loop Off</button>
+    <button onclick="marcarInicioLoop()">A</button>
+    <button onclick="marcarFimLoop()">B</button>
+    <button onclick="desativarLoop()">Loop Off</button>
 
-<span id="tempoAtual">0:00</span>
-</div>
+    <span id="tempoAtual">0:00</span>
+  </div>
 
-<input type="range" id="barraProgresso" value="0" min="0" max="100">
+  <input type="range" id="barraProgresso" value="0" min="0" max="100">
+  <div id="youtubePlayer" style="display:none;"></div>
 </div>
 
 <button id="btnInstall" style="display:none;">📲 Instalar App</button>
 </div>
 
-<!-- ----------------------- SCRIPTS ----------------------- -->
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
 // ----------------------- LOGIN -----------------------
 const senhasPermitidas = ["Shalon","00a00","10a10","20a20","30a33","40a40","50a50"];
@@ -245,7 +245,6 @@ function verificarSenha() {
   const erro = document.getElementById("mensagemErro");
   if (senhasPermitidas.includes(senha)) {
     erro.style.display = "none";
-     // SALVA a senha correta
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("appContainer").style.display = "block";
     alert("✅ Acesso liberado!");
@@ -253,16 +252,15 @@ function verificarSenha() {
     erro.style.display = "block";
   }
 }
+
 function usarFree() {
   const senhaFree = "Shalon";
-  
   localStorage.setItem("senhaValida", senhaFree);
-  
   document.getElementById("loginScreen").style.display = "none";
   document.getElementById("appContainer").style.display = "block";
-  
   alert("✅ Acesso Free liberado!");
 }
+
 function mostrarPix() {
   const pix = document.getElementById("infoPix");
   pix.style.display = pix.style.display === "none" ? "block" : "none";
@@ -298,33 +296,26 @@ Object.keys(escalas).forEach(t=>{
     seletor.appendChild(o);
 });
 seletor.value=tomAtual;
-seletor.onchange=()=>{tomAtual=seletor.value;gerarBotoes();};
+seletor.onchange=()=>{tomAtual=seletor.value; gerarBotoes();};
+
 let modoZoom = false;
 
 function toggleZoom(){
-
     const body = document.body;
     const editor = document.getElementById("editor");
     const btn = document.getElementById("btnZoom");
-
     modoZoom = !modoZoom;
-
     if(modoZoom){
-
         body.classList.add("modo-visualizacao");
         editor.classList.add("editor-zoom");
         editor.classList.add("editor-bloqueado");
         editor.contentEditable = "false";
-
         btn.textContent = "↩ Voltar Edição";
-
     } else {
-
         body.classList.remove("modo-visualizacao");
         editor.classList.remove("editor-zoom");
         editor.classList.remove("editor-bloqueado");
         editor.contentEditable = "true";
-
         btn.textContent = "🔍";
     }
 }
@@ -363,22 +354,6 @@ function ativarSlash(){
     c.style.display="flex";
     c.innerHTML="";
     ["2","3","5","7"].forEach(d=>{
-        let b=document.createElement("button");
-        b.textContent=d;
-        b.onclick=()=>{
-            inserirTexto(d,true);
-            c.style.display="none";
-        };
-        c.appendChild(b);
-    });
-}
-
-function ativarEstrofe(){
-    inserirTexto("Estrofe.",true);
-    let c=document.getElementById("botoesDigitos");
-    c.style.display="flex";
-    c.innerHTML="";
-    ["1","2","3","4","5"].forEach(d=>{
         let b=document.createElement("button");
         b.textContent=d;
         b.onclick=()=>{
@@ -461,133 +436,132 @@ function toggleFiguras(){
             const btn=document.createElement("button");
             btn.textContent=f.simbolo;
             btn.title=f.label;
-            btn.onclick=()=>inserirTexto(f.simbolo,true);
+            btn.onclick=()=>inserirTexto(f.simbolo);
             div.appendChild(btn);
         });
-    }else{
+    } else {
         div.style.display="none";
-        div.innerHTML="";
+    }
+}
+
+function salvar(){
+    const conteudo=document.getElementById("editor").innerHTML;
+    localStorage.setItem("musicaSalva",conteudo);
+    alert("✅ Música salva!");
+}
+
+function buscar(){
+    const conteudo=localStorage.getItem("musicaSalva");
+    if(conteudo) document.getElementById("editor").innerHTML=conteudo;
+    else alert("❌ Nenhuma música encontrada");
+}
+
+function apagar(){
+    if(confirm("Deseja realmente apagar o conteúdo?")){
+        document.getElementById("editor").innerHTML="";
     }
 }
 
 function salvarPDF(){
-    let conteudo=document.getElementById("editor").innerHTML;
-    let w=window.open("","","width=800,height=600");
-    w.document.write("<html><head><title>Cifra</title></head><body>"+conteudo+"</body></html>");
-    w.document.close();
-    w.print();
+    const conteudo=document.getElementById("editor").innerHTML;
+    const win=window.open("","_blank");
+    win.document.write("<html><head><title>Música</title></head><body>"+conteudo+"</body></html>");
+    win.document.close();
+    win.print();
 }
 
-function salvar() {
-    const conteudo = document.getElementById("editor").innerHTML;
-    localStorage.setItem("minhaCifra", conteudo);
-    alert("Cifra salva!");
-}
+// ----------------------- PLAYER UNIFICADO -----------------------
+let ytPlayer = null;
+let audioPlayer = new Audio();
+let currentSource = null;
+let loopStart = 0, loopEnd = null;
+let isPlaying = false;
 
-function buscar() {
-    const conteudo = localStorage.getItem("minhaCifra");
-    if(conteudo){
-        document.getElementById("editor").innerHTML = conteudo;
-        alert("Cifra carregada!");
-    } else {
-        alert("Nenhuma cifra salva encontrada.");
-    }
-}
-
-function apagar() {
-    if(confirm("Deseja realmente limpar o editor?")){
-        document.getElementById("editor").innerHTML = "";
-    }
-}
-
-// ----------------------- PLAYER -----------------------
-const audioFile = document.getElementById("audioFile");
-const player = document.getElementById("player");
-const barraProgresso = document.getElementById("barraProgresso");
-const btnPlay = document.getElementById("btnPlay");
-let loopStart = 0;
-let loopEnd = null;
-
-audioFile.addEventListener("change", function() {
+const fileInput = document.getElementById("audioFile");
+fileInput.addEventListener("change", function() {
     const file = this.files[0];
-    if(file){
-        const url = URL.createObjectURL(file);
-        player.src = url;
-        player.load();
-    }
+    if(!file) return;
+    currentSource = "local";
+    ytPlayer && ytPlayer.pauseVideo();
+    audioPlayer.src = URL.createObjectURL(file);
+    audioPlayer.load();
+    audioPlayer.play();
+    isPlaying = true;
+    document.getElementById("btnPlay").textContent = "⏸";
 });
+
+function onYouTubeIframeAPIReady() {
+    ytPlayer = new YT.Player('youtubePlayer', {
+        height:'0', width:'0', videoId:'',
+        playerVars:{ autoplay:0, controls:0, modestbranding:1 },
+        events:{ 'onStateChange': onPlayerStateChange }
+    });
+}
+
+function tocarYoutube() {
+    const url = document.getElementById("youtubeURL").value;
+    if(!url) return alert("Insira link do YouTube!");
+    const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+    if(!match) return alert("URL inválida!");
+    const videoId = match[1];
+    currentSource = "youtube";
+    audioPlayer.pause();
+    ytPlayer.loadVideoById(videoId);
+    isPlaying = true;
+    document.getElementById("btnPlay").textContent = "⏸";
+}
+
+function onPlayerStateChange(event){
+    const btnPlay = document.getElementById("btnPlay");
+    if(event.data === YT.PlayerState.PLAYING) isPlaying = true;
+    else isPlaying = false;
+    btnPlay.textContent = isPlaying?"⏸":"▶";
+}
 
 function playPause(){
-    if(player.src === "") return;
-    if(player.paused){
-        player.play();
-        btnPlay.textContent = "⏸";
-    } else {
-        player.pause();
-        btnPlay.textContent = "▶";
+    if(currentSource==="local"){
+        if(audioPlayer.paused){ audioPlayer.play(); isPlaying=true; }
+        else{ audioPlayer.pause(); isPlaying=false; }
+    } else if(currentSource==="youtube"){
+        if(isPlaying) ytPlayer.pauseVideo();
+        else ytPlayer.playVideo();
     }
+    document.getElementById("btnPlay").textContent = isPlaying?"⏸":"▶";
 }
+function avancar5(){ if(currentSource==="local") audioPlayer.currentTime+=5; else if(currentSource==="youtube") ytPlayer.seekTo(ytPlayer.getCurrentTime()+5,true);}
+function voltar5(){ if(currentSource==="local") audioPlayer.currentTime=Math.max(0,audioPlayer.currentTime-5); else if(currentSource==="youtube") ytPlayer.seekTo(Math.max(0,ytPlayer.getCurrentTime()-5),true);}
+function mudarVelocidade(){ const rate=parseFloat(document.getElementById("velocidade").value); if(currentSource==="local") audioPlayer.playbackRate=rate; else if(currentSource==="youtube") ytPlayer.setPlaybackRate(rate);}
+function marcarInicioLoop(){ loopStart=currentSource==="local"?audioPlayer.currentTime:ytPlayer.getCurrentTime();}
+function marcarFimLoop(){ loopEnd=currentSource==="local"?audioPlayer.currentTime:ytPlayer.getCurrentTime();}
+function desativarLoop(){ loopStart=0; loopEnd=null;}
 
-function voltar5(){ if(player.src === "") return; player.currentTime = Math.max(0, player.currentTime - 5);}
-function avancar5(){ if(player.src === "") return; player.currentTime = Math.min(player.duration, player.currentTime + 5);}
-function mudarVelocidade(){ player.playbackRate = parseFloat(document.getElementById("velocidade").value); }
+const barra=document.getElementById("barraProgresso");
+const tempoAtual=document.getElementById("tempoAtual");
 
-player.addEventListener("timeupdate", () => {
-    if(player.duration){
-        barraProgresso.value = (player.currentTime / player.duration) * 100;
-        document.getElementById("tempoAtual").textContent = formatTime(player.currentTime);    }
-});
-
-barraProgresso.addEventListener("input", () => {
-    if(player.duration){
-        player.currentTime = (barraProgresso.value / 100) * player.duration;
+setInterval(()=>{
+    let current=0,duration=0;
+    if(currentSource==="local"&&audioPlayer.src){
+        current=audioPlayer.currentTime;
+        duration=audioPlayer.duration||0;
+        if(loopEnd && current>=loopEnd) audioPlayer.currentTime=loopStart;
+    } else if(currentSource==="youtube"&&ytPlayer&&ytPlayer.getCurrentTime){
+        current=ytPlayer.getCurrentTime();
+        duration=ytPlayer.getDuration();
+        if(loopEnd && current>=loopEnd) ytPlayer.seekTo(loopStart,true);
     }
-});
-
-// Loop
-function marcarInicioLoop(){ loopStart = player.currentTime; }
-function marcarFimLoop(){ loopEnd = player.currentTime; }
-function desativarLoop(){ loopStart = 0; loopEnd = null; }
-
-player.addEventListener("timeupdate", () => {
-    if(loopEnd !== null && player.currentTime >= loopEnd){
-        player.currentTime = loopStart;
-        player.play();
+    if(duration){
+        barra.value=(current/duration)*100;
+        tempoAtual.textContent=formatTime(current);
     }
+},200);
+
+barra.addEventListener("input",()=>{
+    const val=barra.value;
+    if(currentSource==="local") audioPlayer.currentTime=(val/100)*audioPlayer.duration;
+    else if(currentSource==="youtube") ytPlayer.seekTo((val/100)*ytPlayer.getDuration(),true);
 });
 
-// Formatar tempo
-function formatTime(t){
-    const min = Math.floor(t/60);
-    const sec = Math.floor(t%60);
-    return `${min}:${sec.toString().padStart(2,"0")}`;
-}
-
-// ----------------------- INSTALL PWA -----------------------
-let deferredPrompt;
-const btnInstall = document.getElementById("btnInstall");
-
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  btnInstall.style.display = "block";
-});
-
-btnInstall.addEventListener("click", async () => {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log("Resultado da instalação:", outcome);
-    deferredPrompt = null;
-    btnInstall.style.display = "none";
-  }
-});
-
-// Registrar o Service Worker
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
+function formatTime(t){ const min=Math.floor(t/60); const sec=Math.floor(t%60); return `${min}:${sec.toString().padStart(2,"0")}`; }
 </script>
-
 </body>
 </html>
