@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -112,18 +113,23 @@ header{
     <input type="password" id="senhaInput" placeholder="Digite sua senha" style="padding:12px; width:100%; border-radius:8px; border:1px solid #ccc; outline:none;">
     <br><br>
     <button onclick="verificarSenha()" style="padding:12px; width:100%; border:none; border-radius:8px; background:#28a745; color:white; font-weight:bold; cursor:pointer;">Entrar</button>
+<button onclick="usarFree()" 
+style="padding:12px; width:100%; border:none; border-radius:8px; 
+background:#007bff; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">
+Usar Free
+</button>
     <p id="mensagemErro" style="color:red; display:none; margin-top:10px;">Senha incorreta fale com seu master</p>
     <hr style="margin:30px 0;">
     <button onclick="mostrarPix()" style="background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; animation: brilhoBtn 1.5s infinite alternate;">
       <img src="https://img.icons8.com/color/200/pix.png" width="20" alt="Pix">
-      <span style="font-size:14px; color:#00ff88; font-weight:bold; text-shadow: 0 0 5px #ff3b3b, 0 0 10px #ff3b3b, 0 0 20px #ff3b3b;">PLANOS - PAGAMENTO</span>
+      <span style="font-size:14px; color:#00ff88; font-weight:bold; text-shadow: 0 0 5px #ff3b3b, 0 0 10px #ff3b3b, 0 0 20px #ff3b3b;">AJUDE A MANTER O SITE</span>
     </button>
     <div id="infoPix" style="display:none; margin-top:20px; background:#f2f2f2; padding:15px; border-radius:10px; font-size:14px;">
-      <p><strong>Valor:</strong> R$5.00 - 30 dias / R$40.00 um ano</p>
+      <p><strong>Seja:</strong>Mantenedor</p>
       <p><strong>Nome:</strong> Isac Coelho Barbosa</p>
       <p><strong>Banco:</strong> Mercado Pago</p>
       <p><strong>Pix:</strong> 84986222876</p>
-      <p><strong>Aviso:</strong> Envie o comprovante para o master.</p>
+      <p><strong></strong> .</p>
     </div>
     <br>
     <button onclick="abrirWhatsapp()" style="margin-top:15px; padding:12px; width:100%; border:none; border-radius:8px; background:#25D366; color:white; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
@@ -212,24 +218,14 @@ Compasso: 4/4
 <!-- ----------------------- SCRIPTS ----------------------- -->
 <script>
 // ----------------------- LOGIN -----------------------
-const senhasPermitidas = ["VerboVip","0000","1111","2222","3333","4444","5555"];
-
-// Login automático ao carregar a página
-window.addEventListener("load", () => {
-  const senhaSalva = localStorage.getItem("senhaValida");
-  if(senhaSalva && senhasPermitidas.includes(senhaSalva)){
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("appContainer").style.display = "block";
-    alert("✅ Acesso liberado automaticamente!");
-  }
-});
+const senhasPermitidas = ["Shalon","00a00","10a10","20a20","30a33","40a40","50a50"];
 
 function verificarSenha() {
   const senha = document.getElementById("senhaInput").value;
   const erro = document.getElementById("mensagemErro");
   if (senhasPermitidas.includes(senha)) {
     erro.style.display = "none";
-    localStorage.setItem("senhaValida", senha); // SALVA a senha correta
+     // SALVA a senha correta
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("appContainer").style.display = "block";
     alert("✅ Acesso liberado!");
@@ -237,7 +233,16 @@ function verificarSenha() {
     erro.style.display = "block";
   }
 }
-
+function usarFree() {
+  const senhaFree = "Shalon";
+  
+  localStorage.setItem("senhaValida", senhaFree);
+  
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("appContainer").style.display = "block";
+  
+  alert("✅ Acesso Free liberado!");
+}
 function mostrarPix() {
   const pix = document.getElementById("infoPix");
   pix.style.display = pix.style.display === "none" ? "block" : "none";
@@ -245,13 +250,6 @@ function mostrarPix() {
 
 function abrirWhatsapp() {
   window.open("https://api.whatsapp.com/send?phone=5584994625560&text=ol%C3%A1", "_blank");
-}
-
-// Função opcional para sair e limpar senha
-function sair() {
-  localStorage.removeItem("senhaValida");
-  document.getElementById("loginScreen").style.display = "flex";
-  document.getElementById("appContainer").style.display = "none";
 }
 
 // ----------------------- EDITOR -----------------------
