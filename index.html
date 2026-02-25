@@ -100,6 +100,25 @@ header{
     height:15px;
     cursor:pointer;
 }
+.modo-visualizacao {
+    background: #999 !important;
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.editor-zoom {
+    width: 794px;              /* largura A4 em px */
+    min-height: 1123px;        /* altura A4 */
+    background: white;
+    padding: 40px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    border-radius: 0;
+}
+
+.editor-bloqueado {
+    pointer-events: none;
+}
 </style>
 </head>
 
@@ -160,6 +179,7 @@ Compasso: 4/4
 <button onclick="abrirPainelEstilo()">Tt</button>
 <button id="togglePipe" onclick="togglePipe()">|: ON</button>
 <button onclick="toggleFiguras()">Figuras</button>
+<button onclick="toggleZoom()" id="btnZoom">🔍</button>
 </div>
 
 <div class="botoes" id="botoesNotas"></div>
@@ -279,6 +299,35 @@ Object.keys(escalas).forEach(t=>{
 });
 seletor.value=tomAtual;
 seletor.onchange=()=>{tomAtual=seletor.value;gerarBotoes();};
+let modoZoom = false;
+
+function toggleZoom(){
+
+    const body = document.body;
+    const editor = document.getElementById("editor");
+    const btn = document.getElementById("btnZoom");
+
+    modoZoom = !modoZoom;
+
+    if(modoZoom){
+
+        body.classList.add("modo-visualizacao");
+        editor.classList.add("editor-zoom");
+        editor.classList.add("editor-bloqueado");
+        editor.contentEditable = "false";
+
+        btn.textContent = "↩ Voltar Edição";
+
+    } else {
+
+        body.classList.remove("modo-visualizacao");
+        editor.classList.remove("editor-zoom");
+        editor.classList.remove("editor-bloqueado");
+        editor.contentEditable = "true";
+
+        btn.textContent = "🔍";
+    }
+}
 
 function gerarBotoes(){
     let c=document.getElementById("botoesNotas");
