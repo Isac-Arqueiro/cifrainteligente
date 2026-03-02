@@ -248,6 +248,7 @@ Compasso: 4/4
 <div class="botoes" id="botoesDigitos" style="display:none; margin-top:5px;"></div>
 <div class="acoes">
 <button onclick="salvar()">Salvar</button>
+<button onclick="apagarMusica()">Apagar Salvo</button>
 <button onclick="buscar()">Buscar</button>
 <button onclick="apagar()">Limpar</button>
 <button onclick="salvarPDF()">Salvar em PDF</button>
@@ -308,7 +309,39 @@ function verificarSenha() {
     erro.style.display = "block";
   }
 }
+function apagarMusica(){
 
+    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
+
+    if(musicas.length === 0){
+        alert("❌ Nenhuma música salva!");
+        return;
+    }
+
+    let lista = "Músicas salvas:\n\n";
+
+    musicas.forEach((m, i) => {
+        lista += `${i+1} - ${m.nome}\n`;
+    });
+
+    let escolha = prompt(lista + "\nDigite o número da música que deseja apagar:");
+
+    let index = parseInt(escolha) - 1;
+
+    if(musicas[index]){
+
+        let confirmar = confirm(`Deseja realmente apagar "${musicas[index].nome}"?`);
+
+        if(confirmar){
+            musicas.splice(index, 1);
+            localStorage.setItem("listaMusicas", JSON.stringify(musicas));
+            alert("🗑 Música apagada com sucesso!");
+        }
+
+    } else {
+        alert("❌ Número inválido!");
+    }
+}
 function usarFree() {
   localStorage.setItem("usuarioLogado", "true");
   mostrarApp();
@@ -500,15 +533,59 @@ function toggleFiguras(){
 }
 
 function salvar(){
-    const conteudo=document.getElementById("editor").innerHTML;
-    localStorage.setItem("musicaSalva",conteudo);
-    alert("✅ Música salva!");
+
+    const conteudo = document.getElementById("editor").innerHTML;
+
+    if(!conteudo.trim()){
+        alert("❌ Editor vazio!");
+        return;
+    }
+
+    let nome = prompt("Digite o nome da música:");
+    if(!nome) return;
+
+    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
+
+    if(musicas.length >= 20){
+        alert("⚠️ Limite de 20 músicas atingido!");
+        return;
+    }
+
+    musicas.push({
+        nome: nome,
+        conteudo: conteudo,
+        data: new Date().toLocaleDateString()
+    });
+
+    localStorage.setItem("listaMusicas", JSON.stringify(musicas));
+
+    alert("✅ Música salva com sucesso!");
 }
 
 function buscar(){
-    const conteudo=localStorage.getItem("musicaSalva");
-    if(conteudo) document.getElementById("editor").innerHTML=conteudo;
-    else alert("❌ Nenhuma música encontrada");
+
+    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
+
+    if(musicas.length === 0){
+        alert("❌ Nenhuma música salva!");
+        return;
+    }
+
+    let lista = "Músicas salvas:\n\n";
+
+    musicas.forEach((m, i) => {
+        lista += `${i+1} - ${m.nome} (${m.data})\n`;
+    });
+
+    let escolha = prompt(lista + "\nDigite o número da música:");
+
+    let index = parseInt(escolha) - 1;
+
+    if(musicas[index]){
+        document.getElementById("editor").innerHTML = musicas[index].conteudo;
+    } else {
+        alert("❌ Número inválido!");
+    }
 }
 
 function apagar(){
